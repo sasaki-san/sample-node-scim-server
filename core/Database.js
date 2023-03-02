@@ -66,7 +66,7 @@ class Database {
                 out.error("Database.dbInit::GroupMemberships::SELECT", err);
             } else if (rows === undefined) {
                 query = "CREATE TABLE GroupMemberships ('id' primary key, 'groupId' VARCHAR(255), 'userId' VARCHAR(255), " +
-                        "UNIQUE (groupId, userId) ON CONFLICT IGNORE)";
+                    "UNIQUE (groupId, userId) ON CONFLICT IGNORE)";
 
                 db.run(query, function (err) {
                     if (err !== null) {
@@ -262,8 +262,8 @@ class Database {
 
                 query = "INSERT INTO Users (id, active, userName, givenName, middleName, familyName, email) \
                          VALUES ('" + String(userId) + "', '" + userModel["active"] + "', '" + userModel["userName"] +
-                        "', '" + userModel["givenName"] + "', '" + userModel["middleName"] + "', '" +
-                        userModel["familyName"] + "', '" + userModel["email"] + "')";
+                    "', '" + userModel["givenName"] + "', '" + userModel["middleName"] + "', '" +
+                    userModel["familyName"] + "', '" + userModel["email"] + "')";
 
                 db.run(query, async function (err) {
                     if (err !== null) {
@@ -466,6 +466,10 @@ class Database {
                     let groups = userModel["groups"];
                     let membershipId = null;
 
+                    if (groups.length === 0) {
+                        return
+                    }
+
                     query = "INSERT INTO GroupMemberships (id, groupId, userId) VALUES";
 
                     for (let i = 0; i < groups.length; i++) {
@@ -519,6 +523,10 @@ class Database {
                     let members = groupModel["members"];
                     let membershipId = null;
 
+                    if (members.length === 0) {
+                        return
+                    }
+
                     query = "INSERT INTO GroupMemberships (id, userId, groupId) VALUES";
 
                     for (let i = 0; i < members.length; i++) {
@@ -549,9 +557,9 @@ class Database {
 
     static async getGroupMemberships(callback) {
         let query = "SELECT m.groupId, m.userId, g.displayName, u.givenName, u.familyName " +
-                    "FROM GroupMemberships m " +
-                    "LEFT JOIN Groups g ON m.groupId = g.id " +
-                    "LEFT JOIN Users u ON m.userId = u.id";
+            "FROM GroupMemberships m " +
+            "LEFT JOIN Groups g ON m.groupId = g.id " +
+            "LEFT JOIN Users u ON m.userId = u.id";
 
         await db.all(query, function (err, rows) {
             if (err !== null) {
@@ -590,8 +598,7 @@ class Database {
         let groupUsers = [];
 
         for (let i = 0; i < memberships.length; i++) {
-            if (memberships[i]["groupId"] === String(groupId))
-            {
+            if (memberships[i]["groupId"] === String(groupId)) {
                 groupUsers.push(mGroup.createUser(memberships[i]["userId"], memberships[i]["userDisplay"]));
             }
         }
